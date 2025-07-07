@@ -7,7 +7,7 @@ const CreateUser: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    role: 'teacher' as 'teacher' | 'student'
+    role: 'teacher' as 'teacher'
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -43,7 +43,7 @@ const CreateUser: React.FC = () => {
         <div className="bg-error-50 border border-error-100 rounded-lg p-6">
           <div className="flex items-center">
             <AlertCircle className="h-5 w-5 text-error-500 mr-2" />
-            <span className="text-error-700">Only school administrators can create users.</span>
+            <span className="text-error-700">Only school administrators can create staff members.</span>
           </div>
         </div>
       </div>
@@ -53,8 +53,13 @@ const CreateUser: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Create User</h1>
-        <p className="text-gray-600 mt-2">Add new teachers and students to your school</p>
+        <h1 className="text-3xl font-bold text-gray-900">Add New Staff</h1>
+        <p className="text-gray-600 mt-2">Add new teachers and staff members to your school</p>
+        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-800">
+            <strong>Note:</strong> To add students, please use the <a href="/admin/admit-student" className="text-blue-600 hover:text-blue-700 underline">Admit Student</a> page instead.
+          </p>
+        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6">
@@ -104,8 +109,10 @@ const CreateUser: React.FC = () => {
               required
             >
               <option value="teacher">Teacher</option>
-              <option value="student">Student</option>
             </select>
+            <p className="mt-1 text-sm text-gray-500">
+              Currently only teachers can be added through this form. Use "Admit Student" for adding students.
+            </p>
           </div>
 
           <div className="bg-company-primary-50 border border-company-primary-200 rounded-lg p-4">
@@ -113,7 +120,7 @@ const CreateUser: React.FC = () => {
               <User className="h-5 w-5 text-company-primary mr-2" />
               <div className="text-sm text-company-primary">
                 <p className="font-medium">Account Information</p>
-                <p>A temporary password will be generated and sent to the user's email address.</p>
+                <p>A temporary password will be generated and sent to the staff member's email address.</p>
               </div>
             </div>
           </div>
@@ -135,7 +142,7 @@ const CreateUser: React.FC = () => {
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-company-primary hover:bg-company-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-company-primary transition-colors"
             >
               <UserPlus className="h-4 w-4 mr-2" />
-              Create User
+              Add Staff Member
             </button>
           </div>
         </form>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { courses, materials, classes } from '../../data/mockData';
-import { Book, FileText, Clock, GraduationCap } from 'lucide-react';
+import { Book, FileText, Clock, GraduationCap, UserPlus, Users, CheckCircle } from 'lucide-react';
 
 const StudentDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -10,6 +10,14 @@ const StudentDashboard: React.FC = () => {
   // Students only see courses they're enrolled in (through their classes)
   const enrolledCourses = courses.filter(course => 
     course.school_id === user?.current_school_id &&
+    course.class_ids?.some(classId => user?.class_ids?.includes(classId))
+  );
+  
+  // Get available courses for self-enrollment
+  const availableCourses = courses.filter(course => 
+    course.school_id === user?.current_school_id &&
+    course.self_enrollment === true &&
+    !user?.enrolled_courses?.includes(course.id) &&
     course.class_ids?.some(classId => user?.class_ids?.includes(classId))
   );
   
@@ -33,6 +41,30 @@ const StudentDashboard: React.FC = () => {
         )}
       </div>
 
+      {/* Enrollment Alert */}
+      {availableCourses.length > 0 && (
+        <div className="mb-8 bg-primary-50 border border-primary-200 rounded-lg p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <UserPlus className="h-8 w-8 text-primary mr-4" />
+              <div>
+                <h3 className="text-lg font-semibold text-primary-800">New Courses Available!</h3>
+                <p className="text-primary-700">
+                  {availableCourses.length} course{availableCourses.length > 1 ? 's' : ''} available for enrollment
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/student/enrollments"
+              className="btn-primary-enhanced"
+            >
+              <UserPlus className="h-4 w-4 mr-2" />
+              Enroll Now
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Stats Cards */}
       <div className="grid-stats mb-8">
         <div className="stats-card">
@@ -50,11 +82,11 @@ const StudentDashboard: React.FC = () => {
         <div className="stats-card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="stats-card-label">Study Materials</p>
-              <p className="stats-card-value">{availableMaterials.length}</p>
+              <p className="stats-card-label">Available Courses</p>
+              <p className="stats-card-value">{availableCourses.length}</p>
             </div>
             <div className="stats-card-icon bg-green-600">
-              <FileText className="h-6 w-6" />
+              <UserPlus className="h-6 w-6" />
             </div>
           </div>
         </div>
@@ -62,11 +94,11 @@ const StudentDashboard: React.FC = () => {
         <div className="stats-card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="stats-card-label">My Classes</p>
-              <p className="stats-card-value">{studentClasses.length}</p>
+              <p className="stats-card-label">Study Materials</p>
+              <p className="stats-card-value">{availableMaterials.length}</p>
             </div>
             <div className="stats-card-icon bg-purple-600">
-              <GraduationCap className="h-6 w-6" />
+              <FileText className="h-6 w-6" />
             </div>
           </div>
         </div>
@@ -88,10 +120,22 @@ const StudentDashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="dashboard-card slide-up">
           <div className="dashboard-card-header">
-            <h3 className="heading-secondary">Quick Access</h3>
+            <h3 className="heading-secondary">Course Enrollment</h3>
           </div>
           <div className="dashboard-card-body">
             <div className="space-y-3">
+              <Link
+                to="/student/enrollments"
+                className="flex items-center px-4 py-3 border border-primary-300 rounded-lg hover:bg-primary-50 transition-colors bg-primary-25"
+              >
+                <UserPlus className="h-5 w-5 text-primary mr-3" />
+                <div>
+                  <span className="text-primary font-medium">Manage Enrollments</span>
+                  {availableCourses.length > 0 && (
+                    <p className="text-sm text-primary-600">{availableCourses.length} new courses available</p>
+                  )}
+                </div>
+              </Link>
               <Link
                 to="/courses"
                 className="flex items-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
@@ -112,20 +156,23 @@ const StudentDashboard: React.FC = () => {
 
         <div className="dashboard-card slide-up">
           <div className="dashboard-card-header">
-            <h3 className="heading-secondary">Recent Downloads</h3>
+            <h3 className="heading-secondary">Recent Activity</h3>
           </div>
           <div className="dashboard-card-body">
             <div className="space-y-3">
               <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-gray-600">Algebra Fundamentals</span>
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                  <span className="text-sm text-gray-600">Enrolled in Mathematics</span>
+                </div>
                 <span className="text-xs text-gray-500">2 hours ago</span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-gray-600">Cell Structure Video</span>
+                <span className="text-sm text-gray-600">Downloaded study material</span>
                 <span className="text-xs text-gray-500">1 day ago</span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-gray-600">Physics Lab Manual</span>
+                <span className="text-sm text-gray-600">Completed assignment</span>
                 <span className="text-xs text-gray-500">3 days ago</span>
               </div>
             </div>
@@ -136,7 +183,15 @@ const StudentDashboard: React.FC = () => {
       {/* My Courses */}
       <div className="dashboard-card slide-up">
         <div className="dashboard-card-header">
-          <h2 className="heading-secondary">My Courses</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="heading-secondary">My Courses</h2>
+            <Link
+              to="/student/enrollments"
+              className="text-primary hover:text-primary-700 text-sm font-medium"
+            >
+              Manage Enrollments →
+            </Link>
+          </div>
         </div>
         <div className="dashboard-card-body">
           <div className="grid-responsive">
@@ -171,9 +226,16 @@ const StudentDashboard: React.FC = () => {
             <div className="text-center py-12">
               <Book className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No courses enrolled</h3>
-              <p className="text-muted-enhanced">
-                You are not enrolled in any courses yet. Contact your school administrator for assistance.
+              <p className="text-muted-enhanced mb-4">
+                You are not enrolled in any courses yet. Browse available courses to get started.
               </p>
+              <Link
+                to="/student/enrollments"
+                className="btn-primary-enhanced"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                Browse Courses
+              </Link>
             </div>
           )}
         </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { courses, users, materials, classes } from '../../data/mockData';
-import { Book, Users, FileText, Plus, GraduationCap, UserCheck } from 'lucide-react';
+import { Book, Users, FileText, Plus, GraduationCap, UserCheck, UserPlus } from 'lucide-react';
 
 const SchoolAdminDashboard: React.FC = () => {
   const { user, school } = useAuth();
@@ -90,7 +90,37 @@ const SchoolAdminDashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="dashboard-card slide-up">
           <div className="dashboard-card-header">
-            <h3 className="heading-secondary">Quick Actions</h3>
+            <h3 className="heading-secondary">Student Management</h3>
+          </div>
+          <div className="dashboard-card-body">
+            <div className="space-y-3">
+              <Link
+                to="/admin/admit-student"
+                className="flex items-center px-4 py-3 border border-primary-300 rounded-lg hover:bg-primary-50 transition-colors bg-primary-25"
+              >
+                <UserPlus className="h-5 w-5 text-primary mr-3" />
+                <div>
+                  <span className="text-primary font-medium">Admit New Student</span>
+                  <p className="text-sm text-primary-600">Add individual students</p>
+                </div>
+              </Link>
+              <Link
+                to="/admin/bulk-admit"
+                className="flex items-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <Users className="h-5 w-5 text-gray-500 mr-3" />
+                <div>
+                  <span className="text-gray-700">Bulk Admit Students</span>
+                  <p className="text-sm text-gray-500">Upload CSV/JSON file</p>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="dashboard-card slide-up">
+          <div className="dashboard-card-header">
+            <h3 className="heading-secondary">Staff Management</h3>
           </div>
           <div className="dashboard-card-body">
             <div className="space-y-3">
@@ -99,44 +129,54 @@ const SchoolAdminDashboard: React.FC = () => {
                 className="flex items-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <Plus className="h-5 w-5 text-gray-500 mr-3" />
-                <span className="text-gray-700">Add Teacher/Student</span>
+                <div>
+                  <span className="text-gray-700">Add New Staff</span>
+                  <p className="text-sm text-gray-500">Add teachers and staff</p>
+                </div>
               </Link>
               <Link
                 to="/admin/manage-users"
                 className="flex items-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <Users className="h-5 w-5 text-gray-500 mr-3" />
-                <span className="text-gray-700">Manage Users</span>
+                <div>
+                  <span className="text-gray-700">Manage All Users</span>
+                  <p className="text-sm text-gray-500">View and edit users</p>
+                </div>
               </Link>
               <Link
                 to="/courses"
                 className="flex items-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <Book className="h-5 w-5 text-gray-500 mr-3" />
-                <span className="text-gray-700">Manage Courses</span>
+                <div>
+                  <span className="text-gray-700">Manage Courses</span>
+                  <p className="text-sm text-gray-500">View course enrollments</p>
+                </div>
               </Link>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="dashboard-card slide-up">
-          <div className="dashboard-card-header">
-            <h3 className="heading-secondary">Recent Activity</h3>
-          </div>
-          <div className="dashboard-card-body">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-gray-600">New course created</span>
-                <span className="text-xs text-gray-500">2 hours ago</span>
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-gray-600">Teacher added</span>
-                <span className="text-xs text-gray-500">1 day ago</span>
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-gray-600">Material uploaded</span>
-                <span className="text-xs text-gray-500">3 days ago</span>
-              </div>
+      {/* Recent Activity */}
+      <div className="dashboard-card slide-up mb-8">
+        <div className="dashboard-card-header">
+          <h3 className="heading-secondary">Recent Activity</h3>
+        </div>
+        <div className="dashboard-card-body">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm text-gray-600">New student admitted: John Doe</span>
+              <span className="text-xs text-gray-500">2 hours ago</span>
+            </div>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm text-gray-600">Teacher added: Mary Smith</span>
+              <span className="text-xs text-gray-500">1 day ago</span>
+            </div>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm text-gray-600">Course material uploaded</span>
+              <span className="text-xs text-gray-500">3 days ago</span>
             </div>
           </div>
         </div>
@@ -149,30 +189,38 @@ const SchoolAdminDashboard: React.FC = () => {
         </div>
         <div className="dashboard-card-body p-0">
           <div className="divide-y divide-gray-200">
-            {schoolCourses.slice(0, 5).map((course) => (
-              <div key={course.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">{course.name}</h3>
-                    <p className="text-muted-enhanced">{course.description}</p>
-                    <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                      <span>Classes: {course.class_ids?.length || 0}</span>
-                      <span>Materials: {materials.filter(m => m.course_id === course.id).length}</span>
+            {schoolCourses.slice(0, 5).map((course) => {
+              const enrolledStudents = users.filter(u => 
+                u.role === 'student' && 
+                u.class_ids?.some(classId => course.class_ids?.includes(classId))
+              ).length;
+              
+              return (
+                <div key={course.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-900">{course.name}</h3>
+                      <p className="text-muted-enhanced">{course.description}</p>
+                      <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                        <span>Students: {enrolledStudents}</span>
+                        <span>Materials: {materials.filter(m => m.course_id === course.id).length}</span>
+                        <span>Classes: {course.class_ids?.length || 0}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-muted-enhanced">Created</p>
+                      <p className="text-sm font-medium text-gray-900">{course.created_at}</p>
+                      <Link
+                        to={`/courses/${course.id}`}
+                        className="text-primary-enhanced hover:text-blue-700 text-sm font-medium"
+                      >
+                        View Details
+                      </Link>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-muted-enhanced">Created</p>
-                    <p className="text-sm font-medium text-gray-900">{course.created_at}</p>
-                    <Link
-                      to={`/courses/${course.id}`}
-                      className="text-primary-enhanced hover:text-blue-700 text-sm font-medium"
-                    >
-                      View Details
-                    </Link>
-                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

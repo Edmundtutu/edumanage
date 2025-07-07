@@ -15,7 +15,8 @@ import {
   Building2,
   UserPlus,
   FileText,
-  BookOpen
+  BookOpen,
+  UserCheck
 } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
@@ -45,7 +46,7 @@ const Sidebar: React.FC = () => {
         items.push(
           { to: '/courses', label: 'Courses', icon: Book },
           { to: '/admin/manage-users', label: 'Manage Users', icon: UserCog },
-          { to: '/admin/create-user', label: 'Add User', icon: Users },
+          { to: '/admin/create-user', label: 'Add Staff', icon: UserCheck },
           { to: '/admin/admit-student', label: 'Admit Student', icon: UserPlus },
           { to: '/admin/bulk-admit', label: 'Bulk Admit', icon: GraduationCap }
         );
@@ -58,9 +59,9 @@ const Sidebar: React.FC = () => {
         break;
       case 'student':
         items.push(
+          { to: '/student/enrollments', label: 'My Enrollments', icon: UserPlus },
           { to: '/courses', label: 'Courses', icon: Book },
-          { to: '/materials', label: 'Materials', icon: FileText },
-          { to: '/student/enrollments', label: 'My Enrollments', icon: BookOpen }
+          { to: '/materials', label: 'Materials', icon: FileText }
         );
         break;
     }
