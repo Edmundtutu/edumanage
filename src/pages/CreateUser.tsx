@@ -57,7 +57,7 @@ const CreateUser: React.FC = () => {
         <p className="text-gray-600 mt-2">Add new teachers and staff members to your school</p>
         <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-sm text-blue-800">
-            <strong>Note:</strong> To add students, please use the <a href="/admin/admit-student" className=\"text-blue-600 hover:text-blue-700 underline">Admit Student</a> page instead.
+            <strong>Note:</strong> To add students, please use the <a href="/admin/admit-student" className="text-blue-600 hover:text-blue-700 underline">Admit Student</a> page instead.
           </p>
         </div>
       </div>
