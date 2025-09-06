@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, School, AuthContextType } from '../types';
+import { apiService } from '../services/api';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -20,15 +21,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [school, setSchool] = useState<School | null>(null);
 
   useEffect(() => {
-    // Check localStorage for existing session
-    const savedUser = localStorage.getItem('user');
-    const savedSchool = localStorage.getItem('school');
-    
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    if (savedSchool) {
-      setSchool(JSON.parse(savedSchool));
+    // Check if we have a token and validate it
+    const token = apiService.getToken();
+    if (token) {
+      apiService.getCurrentUser()
+        .then(({ user, school }) => {
+          setUser(user);
+          setSchool(school);
+        })
+        .catch(() => {
+          // Token is invalid, clear it
+          apiService.removeToken();
+          localStorage.removeItem('user');
+          localStorage.removeItem('school');
+        });
     }
   }, []);
 
@@ -44,7 +50,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await apiService.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
     setUser(null);
     setSchool(null);
     localStorage.removeItem('user');
