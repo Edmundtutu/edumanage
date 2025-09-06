@@ -193,7 +193,7 @@ const Login: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <Building2 className="h-4 w-4 inline mr-2" />
                   Available Schools
-                </label>
+                </label>  
                 <select
                   value={selectedSchool}
                   onChange={(e) => setSelectedSchool(e.target.value)}
@@ -226,16 +226,6 @@ const Login: React.FC = () => {
               </div>
             </form>
           )}
-
-          {/* <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 text-center mb-3 font-medium">Demo Accounts</p>
-            <div className="space-y-2 text-xs text-gray-500">
-              <div><strong>Super Admin:</strong> edmond / admin123</div>
-              <div><strong>School Admin:</strong> jane.smith / password123</div>
-              <div><strong>Teacher:</strong> michael.j / teacher123</div>
-              <div><strong>Student:</strong> david.b / student123</div>
-            </div>
-          </div> */}
         </div>
       </div>
     </div>
