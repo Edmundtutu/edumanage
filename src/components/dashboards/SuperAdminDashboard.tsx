@@ -1,9 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { schools, users } from '../../data/mockData';
-import { Building2, Users, TrendingUp, Plus } from 'lucide-react';
+import { Building2, Users, TrendingUp, Plus, Loader2 } from 'lucide-react';
+import { School, User } from '../../types';
+import { apiService } from '../../services/api';
 
 const SuperAdminDashboard: React.FC = () => {
+  const [schools, setSchools] = useState<School[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [schoolsResponse, usersResponse] = await Promise.all([
+          apiService.getSchools(),
+          apiService.getUsers()
+        ]);
+        
+        setSchools(schoolsResponse.data || []);
+        setUsers(usersResponse.data || []);
+      } catch (err) {
+        setError('Failed to load dashboard data');
+        console.error('Dashboard data fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="container-enhanced py-8 fade-in">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary-enhanced" />
+          <span className="ml-2 text-muted-enhanced">Loading dashboard...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container-enhanced py-8 fade-in">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-800">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   const totalSchools = schools.length;
   const totalUsers = users.length;
   const recentSchools = schools.slice(-3);

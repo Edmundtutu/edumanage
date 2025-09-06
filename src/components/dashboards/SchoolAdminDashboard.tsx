@@ -1,15 +1,71 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { courses, users, materials, classes } from '../../data/mockData';
-import { Book, Users, FileText, Plus, GraduationCap, UserCheck, UserPlus } from 'lucide-react';
+import { Book, Users, FileText, Plus, GraduationCap, UserCheck, UserPlus, Loader2 } from 'lucide-react';
+import { Course, User, Material, Class } from '../../types';
+import { apiService } from '../../services/api';
 
 const SchoolAdminDashboard: React.FC = () => {
   const { user, school } = useAuth();
-  
-  const schoolCourses = courses.filter(course => course.school_id === user?.current_school_id);
-  const schoolUsers = users.filter(u => u.school_ids?.includes(user?.current_school_id || 0));
-  const schoolClasses = classes.filter(c => c.school_id === user?.current_school_id);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user?.current_school_id) return;
+      
+      try {
+        setLoading(true);
+        const [coursesResponse, usersResponse, materialsResponse, classesResponse] = await Promise.all([
+          apiService.getSchoolCourses(user.current_school_id),
+          apiService.getUsers({ school_id: user.current_school_id }),
+          apiService.getMaterials(),
+          apiService.getSchoolClasses(user.current_school_id)
+        ]);
+        
+        setCourses(coursesResponse || []);
+        setUsers(usersResponse.data || []);
+        setMaterials(materialsResponse.data || []);
+        setClasses(classesResponse || []);
+      } catch (err) {
+        setError('Failed to load dashboard data');
+        console.error('Dashboard data fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user?.current_school_id]);
+
+  if (loading) {
+    return (
+      <div className="container-enhanced py-8 fade-in">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary-enhanced" />
+          <span className="ml-2 text-muted-enhanced">Loading dashboard...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container-enhanced py-8 fade-in">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-800">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const schoolCourses = courses;
+  const schoolUsers = users;
+  const schoolClasses = classes;
   const schoolMaterials = materials.filter(material => 
     schoolCourses.some(course => course.id === material.course_id)
   );

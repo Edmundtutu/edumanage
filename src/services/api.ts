@@ -195,6 +195,99 @@ class ApiService {
   async getMaterials(): Promise<{ data: Material[] }> {
     return this.request('/materials');
   }
+
+  async uploadMaterial(courseId: number, formData: FormData): Promise<{ message: string; material: Material }> {
+    const token = this.getToken();
+    const response = await fetch(`${API_BASE_URL}/materials`, {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Upload failed' }));
+      throw new Error(error.message || `HTTP ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  async downloadMaterial(materialId: number): Promise<Blob> {
+    const token = this.getToken();
+    const response = await fetch(`${API_BASE_URL}/materials/${materialId}/download`, {
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Download failed: HTTP ${response.status}`);
+    }
+
+    return response.blob();
+  }
+
+  async deleteMaterial(materialId: number): Promise<{ message: string }> {
+    return this.request(`/materials/${materialId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Additional utility methods
+  async updateUser(userId: number, userData: Partial<User>): Promise<{ message: string; user: User }> {
+    return this.request(`/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  async deleteUser(userId: number): Promise<{ message: string }> {
+    return this.request(`/users/${userId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async createCourse(courseData: Partial<Course>): Promise<{ message: string; course: Course }> {
+    return this.request('/courses', {
+      method: 'POST',
+      body: JSON.stringify(courseData),
+    });
+  }
+
+  async updateCourse(courseId: number, courseData: Partial<Course>): Promise<{ message: string; course: Course }> {
+    return this.request(`/courses/${courseId}`, {
+      method: 'PUT',
+      body: JSON.stringify(courseData),
+    });
+  }
+
+  async deleteCourse(courseId: number): Promise<{ message: string }> {
+    return this.request(`/courses/${courseId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async createClass(classData: Partial<Class>): Promise<{ message: string; class: Class }> {
+    return this.request('/classes', {
+      method: 'POST',
+      body: JSON.stringify(classData),
+    });
+  }
+
+  async updateClass(classId: number, classData: Partial<Class>): Promise<{ message: string; class: Class }> {
+    return this.request(`/classes/${classId}`, {
+      method: 'PUT',
+      body: JSON.stringify(classData),
+    });
+  }
+
+  async deleteClass(classId: number): Promise<{ message: string }> {
+    return this.request(`/classes/${classId}`, {
+      method: 'DELETE',
+    });
+  }
 }
 
 export const apiService = new ApiService();

@@ -49,6 +49,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/courses/{course}/materials', function($courseId) {
         return \App\Models\Material::where('course_id', $courseId)->with(['uploader'])->get();
     });
+    
+    // Material download route
+    Route::get('/materials/{material}/download', [MaterialController::class, 'download']);
 });
 
 // Legacy route for compatibility

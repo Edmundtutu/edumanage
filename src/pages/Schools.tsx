@@ -1,11 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { schools, users } from '../data/mockData';
-import { Building2, Users, Calendar, Plus, Eye } from 'lucide-react';
+import { Building2, Users, Calendar, Plus, Eye, Loader2 } from 'lucide-react';
+import { School, User } from '../types';
+import { apiService } from '../services/api';
 
 const Schools: React.FC = () => {
   const { user } = useAuth();
+  const [schools, setSchools] = useState<School[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [schoolsResponse, usersResponse] = await Promise.all([
+          apiService.getSchools(),
+          apiService.getUsers()
+        ]);
+        
+        setSchools(schoolsResponse.data || []);
+        setUsers(usersResponse.data || []);
+      } catch (err) {
+        setError('Failed to load schools data');
+        console.error('Schools data fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const getSchoolStats = (schoolId: number) => {
     const schoolUsers = users.filter(u => u.school_ids?.includes(schoolId));
@@ -23,6 +50,27 @@ const Schools: React.FC = () => {
             <Building2 className="h-5 w-5 text-error-500 mr-2" />
             <span className="text-error-700">Only super administrators can view all schools.</span>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="container-enhanced py-8 fade-in">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary-enhanced" />
+          <span className="ml-2 text-muted-enhanced">Loading schools...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container-enhanced py-8 fade-in">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-800">{error}</p>
         </div>
       </div>
     );

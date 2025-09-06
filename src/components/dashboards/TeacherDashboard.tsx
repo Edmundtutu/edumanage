@@ -1,12 +1,65 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { courses, materials, users } from '../../data/mockData';
-import { Book, Upload, FileText, Eye, Users, UserPlus, Settings } from 'lucide-react';
+import { Book, Upload, FileText, Eye, Users, UserPlus, Settings, Loader2 } from 'lucide-react';
+import { Course, Material, User } from '../../types';
+import { apiService } from '../../services/api';
 
 const TeacherDashboard: React.FC = () => {
   const { user } = useAuth();
-  
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user?.current_school_id) return;
+      
+      try {
+        setLoading(true);
+        const [coursesResponse, materialsResponse, usersResponse] = await Promise.all([
+          apiService.getSchoolCourses(user.current_school_id),
+          apiService.getMaterials(),
+          apiService.getUsers({ school_id: user.current_school_id })
+        ]);
+        
+        setCourses(coursesResponse || []);
+        setMaterials(materialsResponse.data || []);
+        setUsers(usersResponse.data || []);
+      } catch (err) {
+        setError('Failed to load dashboard data');
+        console.error('Dashboard data fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user?.current_school_id]);
+
+  if (loading) {
+    return (
+      <div className="container-enhanced py-8 fade-in">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary-enhanced" />
+          <span className="ml-2 text-muted-enhanced">Loading dashboard...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container-enhanced py-8 fade-in">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-800">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   const myCourses = courses.filter(course => course.teacher_id === user?.id);
   const myMaterials = materials.filter(material => material.uploaded_by === user?.id);
   

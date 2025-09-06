@@ -1,12 +1,65 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { courses, materials, classes } from '../../data/mockData';
-import { Book, FileText, Clock, GraduationCap, UserPlus, Users, CheckCircle } from 'lucide-react';
+import { Book, FileText, Clock, GraduationCap, UserPlus, Users, CheckCircle, Loader2 } from 'lucide-react';
+import { Course, Material, Class } from '../../types';
+import { apiService } from '../../services/api';
 
 const StudentDashboard: React.FC = () => {
   const { user } = useAuth();
-  
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user?.current_school_id) return;
+      
+      try {
+        setLoading(true);
+        const [coursesResponse, materialsResponse, classesResponse] = await Promise.all([
+          apiService.getSchoolCourses(user.current_school_id),
+          apiService.getMaterials(),
+          apiService.getSchoolClasses(user.current_school_id)
+        ]);
+        
+        setCourses(coursesResponse || []);
+        setMaterials(materialsResponse.data || []);
+        setClasses(classesResponse || []);
+      } catch (err) {
+        setError('Failed to load dashboard data');
+        console.error('Dashboard data fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user?.current_school_id]);
+
+  if (loading) {
+    return (
+      <div className="container-enhanced py-8 fade-in">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary-enhanced" />
+          <span className="ml-2 text-muted-enhanced">Loading dashboard...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container-enhanced py-8 fade-in">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-800">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   // Students only see courses they're enrolled in (through their classes)
   const enrolledCourses = courses.filter(course => 
     course.school_id === user?.current_school_id &&
