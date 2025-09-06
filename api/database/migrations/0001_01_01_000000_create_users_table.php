@@ -15,8 +15,15 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('username')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', ['super_admin', 'school_admin', 'teacher', 'student']);
+            $table->unsignedBigInteger('current_school_id')->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->json('class_ids')->nullable(); // Store as JSON array
+            $table->json('enrolled_courses')->nullable(); // Store as JSON array
+            $table->json('enrolled_at')->nullable(); // Store as JSON object
             $table->rememberToken();
             $table->timestamps();
         });

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { bulkAdmitStudents } from '../data/mockData';
+import { apiService } from '../services/api';
 import { BulkStudentData, BulkUploadResult } from '../types';
 import { Upload, Download, AlertCircle, CheckCircle, FileText, Users } from 'lucide-react';
 
@@ -63,7 +63,11 @@ const BulkAdmitStudents: React.FC = () => {
       }
 
       // Process bulk admission
-      const result = bulkAdmitStudents(studentsData, user?.current_school_id || 0);
+      if (!user?.current_school_id) {
+        throw new Error('No school selected');
+      }
+      
+      const result = await apiService.bulkAdmitStudents(user.current_school_id, studentsData);
       setUploadResult(result);
 
     } catch (err) {

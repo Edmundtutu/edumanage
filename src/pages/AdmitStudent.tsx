@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { classes, admitStudent } from '../data/mockData';
+import { apiService } from '../services/api';
+import { Class } from '../types';
 import { UserPlus, AlertCircle, CheckCircle, User } from 'lucide-react';
 
 const AdmitStudent: React.FC = () => {
@@ -10,13 +11,30 @@ const AdmitStudent: React.FC = () => {
     email: '',
     username: '',
     password: '',
-    class_id: ''
+    class_name: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [schoolClasses, setSchoolClasses] = useState<Class[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const schoolClasses = classes.filter(c => c.school_id === user?.current_school_id);
+  useEffect(() => {
+    const fetchClasses = async () => {
+      if (!user?.current_school_id) return;
+      
+      try {
+        const classes = await apiService.getSchoolClasses(user.current_school_id);
+        setSchoolClasses(classes);
+      } catch (err) {
+        setError('Failed to load classes');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClasses();
+  }, [user?.current_school_id]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -40,7 +58,7 @@ const AdmitStudent: React.FC = () => {
     setSuccess(null);
 
     try {
-      if (!formData.name || !formData.email || !formData.username || !formData.password || !formData.class_id) {
+      if (!formData.name || !formData.email || !formData.username || !formData.password || !formData.class_name) {
         throw new Error('Please fill in all required fields');
       }
 
@@ -48,21 +66,15 @@ const AdmitStudent: React.FC = () => {
         throw new Error('No school selected');
       }
 
-      const selectedClass = classes.find(c => c.id === parseInt(formData.class_id));
-      if (!selectedClass || selectedClass.school_id !== user.current_school_id) {
-        throw new Error('Invalid class selection');
-      }
-
-      const newStudent = admitStudent({
+      const response = await apiService.admitStudent(user.current_school_id, {
         name: formData.name,
         email: formData.email,
         username: formData.username,
+        class_name: formData.class_name,
         password: formData.password,
-        class_id: parseInt(formData.class_id),
-        school_id: user.current_school_id
       });
 
-      setSuccess(`Student "${newStudent.name}" has been successfully admitted to ${selectedClass.name}!`);
+      setSuccess(`Student "${response.student.name}" has been successfully admitted to ${formData.class_name}! Password: ${response.password}`);
       
       // Reset form
       setFormData({
@@ -70,7 +82,7 @@ const AdmitStudent: React.FC = () => {
         email: '',
         username: '',
         password: '',
-        class_id: ''
+        class_name: ''
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to admit student');
@@ -193,20 +205,21 @@ const AdmitStudent: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="class_id" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="class_name" className="block text-sm font-medium text-gray-700 mb-2">
               Class *
             </label>
             <select
-              id="class_id"
-              name="class_id"
-              value={formData.class_id}
+              id="class_name"
+              name="class_name"
+              value={formData.class_name}
               onChange={handleInputChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               required
+              disabled={loading}
             >
               <option value="">Select a class</option>
               {schoolClasses.map((cls) => (
-                <option key={cls.id} value={cls.id}>
+                <option key={cls.id} value={cls.name}>
                   {cls.name} - {cls.grade_level}
                 </option>
               ))}
@@ -231,7 +244,7 @@ const AdmitStudent: React.FC = () => {
                 email: '',
                 username: '',
                 password: '',
-                class_id: ''
+                class_name: ''
               })}
               className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
               disabled={isSubmitting}
