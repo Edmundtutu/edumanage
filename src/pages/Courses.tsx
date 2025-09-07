@@ -1,11 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { courses, materials, users } from '../data/mockData';
-import { Book, FileText, User, UserPlus, Settings, Users as UsersIcon } from 'lucide-react';
+import { Book, FileText, User, UserPlus, Settings, Users as UsersIcon, Loader2 } from 'lucide-react';
+import { Course, Material, User as UserType } from '../types';
+import { apiService } from '../services/api';
 
 const Courses: React.FC = () => {
   const { user } = useAuth();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [users, setUsers] = useState<UserType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [coursesResponse, materialsResponse, usersResponse] = await Promise.all([
+          user?.current_school_id ? apiService.getSchoolCourses(user.current_school_id) : apiService.getSchools().then(() => []),
+          apiService.getMaterials(),
+          apiService.getUsers()
+        ]);
+        
+        setCourses(coursesResponse || []);
+        setMaterials(materialsResponse.data || []);
+        setUsers(usersResponse.data || []);
+      } catch (err) {
+        setError('Failed to load courses data');
+        console.error('Courses data fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user?.current_school_id]);
 
   const getFilteredCourses = () => {
     if (user?.role === 'super_admin') {
@@ -32,6 +62,27 @@ const Courses: React.FC = () => {
     const teacher = users.find(u => u.id === teacherId);
     return teacher?.name || 'Unknown';
   };
+
+  if (loading) {
+    return (
+      <div className="container-enhanced py-8 fade-in">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary-enhanced" />
+          <span className="ml-2 text-muted-enhanced">Loading courses...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container-enhanced py-8 fade-in">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-800">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   const getMaterialCount = (courseId: number) => {
     return materials.filter(m => m.course_id === courseId).length;
