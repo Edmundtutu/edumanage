@@ -2,6 +2,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, School, AuthContextType } from '../types';
 import { apiService } from '../services/api';
 
+const AUTH_USER_KEY = 'edumanage_user';
+const AUTH_SCHOOL_KEY = 'edumanage_school';
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
@@ -19,34 +22,65 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [school, setSchool] = useState<School | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     // Check if we have a token and validate it
-    const token = apiService.getToken();
-    if (token) {
-      apiService.getCurrentUser()
-        .then(({ user, school }) => {
-          setUser(user);
-          setSchool(school);
-        })
-        .catch(() => {
-          // Token is invalid, clear it
-          apiService.removeToken();
-          localStorage.removeItem('user');
-          localStorage.removeItem('school');
-        });
+    const bootstrap = async () => {
+      const token = apiService.getToken();
+      if (!token) {
+        // Try to restore user/school from localStorage (fallback)
+        const rawUser = localStorage.getItem(AUTH_USER_KEY);
+        const rawSchool = localStorage.getItem(AUTH_SCHOOL_KEY);
+        if (rawUser) {
+          try {
+            setUser(JSON.parse(rawUser));
+          } catch {
+            localStorage.removeItem(AUTH_USER_KEY);
+          }
+        }
+        if (rawSchool) {
+          try {
+            setSchool(JSON.parse(rawSchool));
+          } catch {
+            localStorage.removeItem(AUTH_SCHOOL_KEY);
+          }
+        }
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await apiService.getCurrentUser();
+        setUser(res.user);
+        setSchool(res.school);
+      } catch (e) {
+        // Token invalid/expired - clear everything
+        apiService.removeToken();
+        localStorage.removeItem(AUTH_USER_KEY);
+        localStorage.removeItem(AUTH_SCHOOL_KEY);
+        setUser(null);
+        setSchool(null);
+      } finally {
+        setLoading(false);
+      }
     }
+    bootstrap();
   }, []);
 
   const login = (userData: User, schoolData?: School) => {
     setUser(userData);
     setSchool(schoolData || null);
-    
-    localStorage.setItem('user', JSON.stringify(userData));
-    if (schoolData) {
-      localStorage.setItem('school', JSON.stringify(schoolData));
-    } else {
-      localStorage.removeItem('school');
+    // Persist user & school locally so we have a fallback before bootstrap completes
+    try {
+      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userData));
+      if (schoolData) {
+        localStorage.setItem(AUTH_SCHOOL_KEY, JSON.stringify(schoolData));
+      } else {
+        localStorage.removeItem(AUTH_SCHOOL_KEY);
+      }
+    } catch (e) {
+      // ignore storage errors
     }
   };
 
@@ -58,8 +92,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
     setUser(null);
     setSchool(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('school');
+    apiService.removeToken();
+    localStorage.removeItem(AUTH_USER_KEY);
+    localStorage.removeItem(AUTH_SCHOOL_KEY);
   };
 
   // Helper functions for role checks
@@ -79,6 +114,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value: AuthContextType = {
     user,
     school,
+    loading,
     login,
     logout,
     isAuthenticated: !!user,

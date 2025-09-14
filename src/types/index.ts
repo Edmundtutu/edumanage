@@ -74,6 +74,7 @@ export interface Enrollment {
 export interface AuthContextType {
   user: User | null;
   school: School | null;
+  loading?: boolean;
   login: (user: User, school?: School) => void;
   logout: () => void;
   isAuthenticated: boolean;

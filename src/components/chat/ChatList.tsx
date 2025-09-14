@@ -208,7 +208,7 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat, selectedChatId }) => 
                   onClick={() => setShowNewChatModal(false)}
                   className="p-1 hover:bg-gray-100 rounded-full transition-colors"
                 >
-                  <X className="h-5 w-5 text-gray-500" />
+                  <span className="h-5 w-5 text-gray-500">&times;</span>
                 </button>
               </div>
             </div>
