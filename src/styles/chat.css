@@ -1,0 +1,235 @@
+/* Chat-specific styles */
+
+/* Message animations */
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-item {
+  animation: messageSlideIn 0.2s ease-out;
+}
+
+/* Typing indicator animation */
+@keyframes typingBounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+}
+
+.typing-dot {
+  animation: typingBounce 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+/* Voice recording pulse */
+@keyframes recordingPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.recording-button {
+  animation: recordingPulse 2s infinite;
+}
+
+/* Chat bubble styles */
+.chat-bubble-sent {
+  background: linear-gradient(135deg, var(--company-primary) 0%, var(--company-primary-600) 100%);
+  color: white;
+}
+
+.chat-bubble-received {
+  background: white;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+/* Responsive chat layout */
+@media (max-width: 1024px) {
+  .chat-container {
+    height: calc(100vh - 4rem);
+  }
+  
+  .chat-list-mobile {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+  }
+  
+  .chat-view-mobile {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+  }
+}
+
+/* File upload preview */
+.file-preview {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Audio player customization */
+audio {
+  width: 100%;
+  height: 32px;
+}
+
+audio::-webkit-media-controls-panel {
+  background-color: transparent;
+}
+
+/* Scrollbar styling for chat */
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Message status indicators */
+.message-status {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.message-sending {
+  color: #9ca3af;
+}
+
+.message-sent {
+  color: #10b981;
+}
+
+.message-failed {
+  color: #ef4444;
+}
+
+/* Chat input enhancements */
+.chat-input-container {
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  padding: 16px;
+}
+
+.chat-input {
+  border: 1px solid #d1d5db;
+  border-radius: 24px;
+  padding: 8px 16px;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.chat-input:focus {
+  border-color: var(--company-primary);
+  box-shadow: 0 0 0 3px rgba(2, 38, 79, 0.1);
+}
+
+/* Attachment button styles */
+.attachment-button {
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.attachment-button:hover {
+  background-color: #f3f4f6;
+}
+
+/* Voice recording UI */
+.voice-recorder {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-top: 1px solid #f59e0b;
+}
+
+.recording-timer {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  color: #dc2626;
+}
+
+/* Group chat indicators */
+.group-chat-indicator {
+  background: linear-gradient(135deg, var(--company-secondary) 0%, var(--company-secondary-600) 100%);
+  color: var(--company-primary);
+}
+
+.direct-chat-indicator {
+  background: linear-gradient(135deg, var(--company-primary) 0%, var(--company-primary-600) 100%);
+  color: white;
+}
+
+/* Accessibility improvements */
+.chat-button:focus {
+  outline: 2px solid var(--company-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .chat-bubble-sent {
+    border: 2px solid var(--company-primary-800);
+  }
+  
+  .chat-bubble-received {
+    border: 2px solid #374151;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .message-item {
+    animation: none;
+  }
+  
+  .typing-dot {
+    animation: none;
+  }
+  
+  .recording-button {
+    animation: none;
+  }
+}

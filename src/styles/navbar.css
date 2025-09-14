@@ -1,0 +1,346 @@
+/* Enhanced Navbar Styles with Company Colors */
+
+/* Company Color Variables */
+:root {
+  --company-primary: #02264f;
+  --company-primary-light: #1a3a6b;
+  --company-primary-dark: #011a3a;
+  --company-secondary: #FFC300;
+  --company-secondary-light: #ffd633;
+  --company-secondary-dark: #e6af00;
+  --company-accent: #f8f9fa;
+  --company-text: #2c3e50;
+  --company-text-light: #6c757d;
+}
+
+/* Main Navbar */
+.navbar-enhanced {
+  @apply fixed w-full top-0 z-50;
+  background: linear-gradient(135deg, var(--company-primary) 0%, var(--company-primary-light) 100%);
+  border-bottom: 3px solid var(--company-secondary);
+  box-shadow: 0 4px 20px rgba(2, 38, 79, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+.navbar-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  @apply flex items-center justify-between h-16;
+}
+
+/* Brand Section */
+.navbar-brand {
+  @apply flex items-center space-x-4;
+}
+
+.navbar-mobile-toggle {
+  @apply p-2 rounded-md text-white hover:bg-white hover:bg-opacity-10;
+  @apply transition-all duration-200;
+}
+
+.navbar-logo {
+  @apply flex items-center space-x-2;
+}
+
+.navbar-logo-text {
+  @apply text-xl font-bold text-white;
+  font-family: 'Poppins', sans-serif;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Search Section */
+.navbar-search {
+  @apply flex-1 max-w-2xl mx-8;
+  @apply hidden md:block;
+}
+
+.search-form {
+  @apply w-full;
+}
+
+.search-input-container {
+  @apply relative;
+}
+
+.search-icon {
+  @apply absolute left-3 top-1/2 transform -translate-y-1/2;
+  @apply h-5 w-5 text-gray-400;
+}
+
+.search-input {
+  @apply w-full pl-10 pr-4 py-2 rounded-lg;
+  @apply bg-white bg-opacity-90 backdrop-blur-sm;
+  @apply border border-transparent;
+  @apply text-gray-700 placeholder-gray-500;
+  @apply focus:outline-none focus:ring-2 focus:ring-company-secondary focus:bg-white;
+  @apply transition-all duration-200;
+  font-size: 14px;
+}
+
+.search-input:focus {
+  box-shadow: 0 0 0 3px rgba(255, 195, 0, 0.2);
+}
+
+/* Actions Section */
+.navbar-actions {
+  @apply flex items-center space-x-2;
+}
+
+.navbar-action-btn {
+  @apply relative p-2 rounded-lg text-white;
+  @apply hover:bg-white hover:bg-opacity-10;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-company-secondary;
+}
+
+.navbar-action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.navbar-badge {
+  @apply absolute -top-1 -right-1;
+  @apply bg-company-secondary text-company-primary;
+  @apply text-xs font-bold rounded-full;
+  @apply h-5 w-5 flex items-center justify-center;
+  @apply border-2 border-white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* User Button */
+.navbar-user-btn {
+  @apply flex items-center space-x-3 px-3 py-2 rounded-lg;
+  @apply text-white hover:bg-white hover:bg-opacity-10;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-company-secondary;
+}
+
+.user-avatar {
+  @apply w-8 h-8 rounded-full;
+  @apply bg-company-secondary text-company-primary;
+  @apply flex items-center justify-center;
+  @apply border-2 border-white;
+}
+
+.user-info {
+  @apply hidden sm:block text-left;
+}
+
+.user-name {
+  @apply block text-sm font-medium text-white;
+}
+
+.user-role {
+  @apply block text-xs text-gray-300 capitalize;
+}
+
+/* Notifications Dropdown */
+.notifications-dropdown {
+  @apply absolute right-0 mt-2 w-80;
+  @apply bg-white rounded-lg shadow-xl;
+  @apply border border-gray-200;
+  @apply z-50;
+  animation: dropdownSlide 0.2s ease-out;
+}
+
+.notifications-header {
+  @apply flex items-center justify-between px-4 py-3;
+  @apply border-b border-gray-200;
+  background: linear-gradient(135deg, var(--company-accent) 0%, #ffffff 100%);
+}
+
+.notifications-title {
+  @apply text-lg font-semibold text-company-primary;
+}
+
+.notifications-mark-read {
+  @apply text-sm text-company-secondary hover:text-company-secondary-dark;
+  @apply font-medium transition-colors duration-200;
+}
+
+.notifications-list {
+  @apply max-h-64 overflow-y-auto;
+}
+
+.notification-item {
+  @apply flex items-center justify-between px-4 py-3;
+  @apply hover:bg-gray-50 transition-colors duration-150;
+  @apply border-b border-gray-100 last:border-b-0;
+}
+
+.notification-item.unread {
+  @apply bg-blue-50;
+}
+
+.notification-content {
+  @apply flex-1;
+}
+
+.notification-title {
+  @apply text-sm font-medium text-gray-900;
+}
+
+.notification-time {
+  @apply text-xs text-gray-500 mt-1;
+}
+
+.notification-dot {
+  @apply w-2 h-2 rounded-full bg-company-secondary;
+  @apply flex-shrink-0 ml-2;
+}
+
+.notifications-footer {
+  @apply px-4 py-3 border-t border-gray-200;
+  @apply bg-gray-50;
+}
+
+.notifications-view-all {
+  @apply w-full text-center text-sm font-medium;
+  @apply text-company-primary hover:text-company-primary-light;
+  @apply transition-colors duration-200;
+}
+
+/* User Dropdown */
+.user-dropdown {
+  @apply absolute right-0 mt-2 w-64;
+  @apply bg-white rounded-lg shadow-xl;
+  @apply border border-gray-200;
+  @apply z-50;
+  animation: dropdownSlide 0.2s ease-out;
+}
+
+.user-dropdown-header {
+  @apply flex items-center space-x-3 px-4 py-3;
+  background: linear-gradient(135deg, var(--company-primary) 0%, var(--company-primary-light) 100%);
+  color: white;
+}
+
+.user-avatar-large {
+  @apply w-10 h-10 rounded-full;
+  @apply bg-company-secondary text-company-primary;
+  @apply flex items-center justify-center;
+  @apply border-2 border-white;
+}
+
+.user-dropdown-name {
+  @apply text-sm font-semibold text-white;
+}
+
+.user-dropdown-email {
+  @apply text-xs text-gray-200;
+}
+
+.user-dropdown-school {
+  @apply text-xs text-company-secondary font-medium;
+}
+
+.user-dropdown-divider {
+  @apply border-t border-gray-200;
+}
+
+.user-dropdown-menu {
+  @apply py-2;
+}
+
+.user-dropdown-item {
+  @apply w-full flex items-center space-x-3 px-4 py-2;
+  @apply text-sm text-gray-700 hover:bg-gray-50;
+  @apply transition-colors duration-150;
+}
+
+.user-dropdown-logout {
+  @apply w-full flex items-center space-x-3 px-4 py-3;
+  @apply text-sm text-red-600 hover:bg-red-50;
+  @apply transition-colors duration-150;
+  @apply border-t border-gray-200;
+}
+
+/* Mobile Menu */
+.mobile-menu-overlay {
+  @apply absolute top-full left-0 right-0;
+  @apply bg-company-primary border-t border-company-secondary;
+  @apply shadow-lg;
+}
+
+.mobile-search {
+  @apply p-4 border-b border-company-primary-light;
+}
+
+.mobile-actions {
+  @apply py-2;
+}
+
+.mobile-action-item {
+  @apply w-full flex items-center justify-between px-4 py-3;
+  @apply text-white hover:bg-white hover:bg-opacity-10;
+  @apply transition-colors duration-150;
+}
+
+/* Animations */
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar-container {
+    @apply px-4;
+  }
+  
+  .navbar-actions {
+    @apply space-x-1;
+  }
+  
+  .user-info {
+    @apply hidden;
+  }
+  
+  .notifications-dropdown,
+  .user-dropdown {
+    @apply w-72 right-2;
+  }
+}
+
+@media (max-width: 640px) {
+  .notifications-dropdown,
+  .user-dropdown {
+    @apply w-64;
+  }
+}
+
+/* Focus States for Accessibility */
+.navbar-action-btn:focus,
+.navbar-user-btn:focus {
+  @apply ring-2 ring-company-secondary ring-offset-2 ring-offset-company-primary;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .navbar-enhanced {
+    border-bottom-width: 4px;
+  }
+  
+  .navbar-badge {
+    border-width: 3px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .navbar-action-btn,
+  .navbar-user-btn,
+  .notification-item,
+  .user-dropdown-item {
+    transition: none;
+  }
+  
+  .notifications-dropdown,
+  .user-dropdown {
+    animation: none;
+  }
+}
